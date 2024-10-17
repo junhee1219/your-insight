@@ -1,0 +1,142 @@
+* {
+    font-family: 'Noto Sans KR', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #121212;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+}
+
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.button-container {
+    margin-top : 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    justify-items: center;
+    align-items: center;
+}
+
+.action-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    color: white;
+    font-size: 1.2rem;
+    text-align: center;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: transform 0.3s ease, background 0.3s ease;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+.inquiry-button {
+    background: #ff453a99;
+}
+
+.button-container .inquiry-button:hover {
+    background: rgba(255, 69, 58, 0.8);
+    box-shadow: 0 10px 40px rgba(255, 69, 58, 0.6);
+}
+
+.action-button:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.textarea-container {
+    display: flex;
+    gap: 20px;
+}
+
+.custom-textarea {
+    width: 250px;
+    height: 100px;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 10px;
+}
+
+footer {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 800px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+footer a {
+    color: #00aaff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+textarea, input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    resize: vertical;
+    font-size: 16px;
+    height: 100%;
+}
+
+.textarea-button{
+    height: 50px !important;
+    width : 170px !important;
+}
+
+ #copy-message {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #f3f3ce;
+    color: rgb(22, 22, 22);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 1rem;
+    display: none;
+    z-index: 1000;
+}

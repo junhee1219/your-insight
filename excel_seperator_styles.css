@@ -1,0 +1,359 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+footer {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 0px;
+    margin: 20px auto;
+    max-width: 800px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+footer a {
+    color: #00aaff;
+    text-decoration: none;
+    font-weight: bold;
+}
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #121212;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100vh;
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(90deg, #ff9a9e, #fad0c4);
+    border-radius: 20px;
+    margin: 20px auto;
+    max-width: 800px;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+
+.description {
+    margin: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    max-width: 800px;
+    text-align: center;
+}
+
+.upload-section, .download-section {
+    margin: 20px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    max-width: 1200px;
+    text-align: center;
+}
+
+.upload-section h2, .download-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+input[type="file"] {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.action-button {
+    display: inline-block;
+    padding: 15px 30px;  /* 패딩을 늘려 버튼을 키움 */
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    text-decoration: none;
+    color: white;
+    font-size: 1rem;
+    transition: background 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+    width: auto;
+}
+
+.action-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.hidden {
+    display: none !important;  /* 우선순위를 강제하여 hidden 적용 */
+}
+
+
+button:disabled {
+    background: rgba(255, 255, 255, 0.1);  /* 비활성화된 버튼 스타일 */
+    cursor: not-allowed;
+}
+
+button:enabled {
+    background: rgba(255, 255, 255, 0.2);  /* 활성화된 버튼 스타일 */
+    cursor: pointer;
+}
+
+/* 로딩 애니메이션 */
+.loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.spinner {
+    border: 5px solid rgba(255, 255, 255, 0.2);
+    border-top: 5px solid #fff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+footer {
+    text-align: center;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 800px;
+    border-radius: 10px;
+    color: #fff;
+    font-size: 1rem;
+}
+
+.social-links img {
+    width: 30px;
+    height: 30px;
+    margin: 0 5px;
+}
+
+
+#download-section {
+    margin-top: 40px;
+    text-align: center;
+}
+
+#download-section h2 {
+    margin-bottom: 20px;
+}
+
+#download-link {
+    display: inline-block;
+    padding: 15px 30px;  /* 버튼 크기를 키움 */
+    background: rgba(50, 50, 50, 0.8);  /* 다운로드 버튼 색상을 어둡게 조정 */
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    transition: background 0.3s ease;
+}
+
+#download-link:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 선택된 옵션의 스타일 */
+#sheet-list-section option {
+    color: black; /* 옵션 리스트의 텍스트 색상 */
+    background-color: white; /* 옵션 리스트의 배경색 */
+}
+
+/* 시트 설정 섹션 */
+#sheet-list-section {
+    margin: 30px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    max-width: 1500px;
+    text-align: left;
+}
+
+#sheet-list-section h3 {
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #FFD700; /* 시트명을 더 강조하기 위해 색상을 변경 */
+}
+
+#sheet-list-section label {
+    margin-right: 10px;
+    font-size: 1rem;
+}
+
+#sheet-list-section select, #sheet-list-section input[type="number"],
+#split-settings-form input[type="text"] {
+    width: 150px;
+    padding: 5px;
+    margin-right: 10px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+}
+
+#sheet-list-section div {
+    margin-bottom: 30px; /* 시트별 설정 간의 간격을 넓힘 */
+}
+
+#split-button {
+    display: block; /* 블록 요소로 변경하여 중앙 정렬 가능하게 함 */
+    margin: 20px auto; /* 자동으로 양쪽 여백을 동일하게 하여 가운데 정렬 */
+    padding: 10px 40px; /* 버튼 크기를 늘림 */
+    font-size: 1.2rem;
+    background: rgba(50, 50, 50, 0.8);
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#split-button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* 시트별 설정 영역 구분 */
+.sheet-setting {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.1); /* 영역을 명확히 보여줄 배경 */
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3); /* 경계선 추가 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+}
+
+/* 시트 이름과 토글 버튼을 수평 정렬 */
+.sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.sheet-header h3 {
+    font-size: 1.5rem;
+    color: #FFD700;
+    margin: 0;
+}
+
+
+/* 토글 스위치 스타일 */
+.toggle-label {
+    display: flex;
+    align-items: center;
+}
+
+.toggle-label input[type="checkbox"] {
+    appearance: none;
+    width: 40px;
+    height: 20px;
+    background-color: #ccc;
+    border-radius: 20px;
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.2s ease;
+    margin-left: 10px; /* 토글 버튼과 설명 간의 간격 */
+}
+
+.toggle-label input[type="checkbox"]:checked {
+    background-color: #4caf50;
+}
+
+.toggle-label input[type="checkbox"]::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+
+.toggle-label input[type="checkbox"]:checked::before {
+    transform: translateX(20px);
+}
+/* 토글 설명 스타일 */
+.toggle-description {
+    font-size: 1rem;
+    color: white;
+    margin-right: 10px;
+}
+
+/* 시트별 설정 영역 구분 */
+.sheet-setting {
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.1); /* 영역을 명확히 보여줄 배경 */
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.3); /* 경계선 추가 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+}
+
+/* 비활성화된 필드는 불투명하게 */
+#split-settings-form select:disabled,
+#split-settings-form input[type="text"]:disabled,
+#split-settings-form input[type="number"]:disabled {
+    background: rgba(255, 255, 255, 0.1);
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* 시트별 설정 제목을 가운데로 정렬 */
+#sheet-list-section h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    color: #FFD700;
+    margin-bottom: 20px;
+}
+
+#split-settings-form select,
+#split-settings-form input[type="text"],
+#split-settings-form input[type="number"] {
+    padding: 5px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    margin-right: 10px;
+    width: 100px;
+}
+
+.dragover {
+    border: 2px dashed #007bff;
+    background-color: #f0f8ff;
+    margin-bottom: 10px;
+}

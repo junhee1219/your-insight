@@ -1,0 +1,111 @@
+<div>
+서버 이전 중입니다.
+2024-10-19 복구 예정입니다.
+</div>
+<!-- <!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>PPT 추출</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='excel_seperator_styles.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+</head>
+<style>
+    /* Badge Style */
+.badge {
+    background-color: #ffc107;
+    color: black;
+    padding: 5px 10px;
+    border-radius: 10px;
+    font-size: 1rem;
+    margin-left: 10px;
+}
+
+/* Form settings styling */
+#split-settings-form .sheet-setting {
+    display: flex;
+    flex-direction: column; /* Makes each setting in its own line */
+    gap: 20px;
+    padding: 20px 20px;
+}
+
+#split-settings-form label {
+    font-weight: bold;
+    width: 150px; /* 라벨의 고정 너비 설정 */
+    margin-right: 10px; /* 인풋과의 간격 */
+    display: inline-flex;
+}
+
+#split-settings-form input {
+    box-sizing: border-box; /* 패딩이 전체 width에 포함되도록 설정 */
+}
+
+#split-settings-form #setting {
+    justify-content: space-between;
+    align-items: center;
+}
+</style>
+<body>
+    <header>
+        <h1>PPT 추출 기능</h1>
+    </header>
+
+    <main>
+
+        <section class="upload-section">
+            <h2>PPT 파일 업로드</h2>
+            <form id="excel-upload-form" enctype="multipart/form-data">
+                <div id="drop-zone" style="border: 2px dashed #ccc; padding: 20px; margin: 20px; text-align: center;">
+                    <p id="file-description">파일을 여기에 드래그 앤 드롭하거나 클릭하여 파일을 선택하세요.</p>
+                    <input type="file" id="excel-file" name="excel-file" accept=".pptx" style="display: none;" required>
+                    <div id="file-info" style="display: none;">
+                        <img id="file-icon" src="{{ url_for('static', filename='file_icon.png') }}" style="width: 30px; height: 30px; margin-right:10px"alt="파일 아이콘">
+                        <p>
+                            <span id="file-name">파일명: </span>
+                            <span id="file-size">파일 크기: </span>
+                        </p>
+                    </div>
+                </div>
+                <button type="submit" class="action-button" disabled>파일 읽기</button>
+            </form>
+        </section>
+
+
+        <section id="loading-section" class="loading hidden">
+            <div class="spinner"></div>
+            <p>파일을 처리 중입니다. 잠시만 기다려주세요...</p>
+        </section>
+
+
+        <section id="sheet-list-section" class="hidden">
+            <h2>PPT 추출 설정
+                <span id="slide-size" class="badge"></span>
+            </h2>
+            <form id="split-settings-form">
+
+            </form>
+            <button id="split-button" class="action-button hidden">PPT 추출하기</button>
+        </section>
+
+
+        <section id="splitting-loading-section" class="loading hidden">
+            <div class="spinner"></div>
+            <p>파일을 분리하는 중입니다. 잠시만 기다려주세요...</p>
+        </section>
+
+
+        <section id="download-section" class="hidden">
+            <h2>파일 다운로드</h2>
+            <a id="download-link" href="#" class="action-button" download>다운로드</a>
+        </section>
+    </main>
+
+    <footer>
+        <p>문의/제안: <a href="mailto:help-whatever@naver.com">help-whatever@naver.com</a></p>
+    </footer>
+    <script src="{{ url_for('static', filename='ppt_extractor.js') }}"></script>
+</body>
+</html> -->

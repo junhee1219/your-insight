@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>PDF 편집기</title>
+  <style>
+    .dragover {
+      border: 2px dashed #007bff;
+      background-color: #f0f8ff;
+      margin-bottom: 10px;
+  }
+
+    footer {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 0px 20px;
+      margin: 20px auto;
+      max-width: 800px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+  }
+  
+  footer a {
+      color: #00aaff;
+      text-decoration: none;
+      font-weight: bold;
+  }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #121212;
+      color: #fff;
+      
+      margin: 20px;
+      display: flex;                 /* Flexbox를 사용하여 전체 콘텐츠를 중앙 정렬 */
+      flex-direction: column;        /* 세로 방향으로 정렬 */
+      align-items: center;           /* 가로 축에서 중앙 정렬 */
+    }
+  
+    /* 제목 중앙 정렬 */
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;           /* 제목과 드롭 영역 사이의 간격 */
+    }
+  
+    /* 드롭 영역 중앙 정렬 */
+    #drop-area {
+      border: 2px dashed #ccc;
+      border-radius: 20px;
+      max-width: 600px;              /* 원하는 최대 너비로 조정 가능 */
+      width: 100%;                    /* 가로 폭을 부모 컨테이너에 맞춤 */
+      padding: 20px;
+      text-align: center;
+      color: #ccc;
+      margin-bottom: 20px;
+      transition: border-color 0.3s, color 0.3s;
+    }
+  
+    /* 업로드 버튼 중앙 정렬 */
+    #upload-button {
+      display: block;                /* 버튼을 블록 요소로 변경 */
+      margin: 10px auto;             /* 상하 마진 10px, 좌우 마진 자동 설정으로 중앙 정렬 */
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+  
+    /* 버튼 호버 및 클릭 효과 */
+    button:hover {
+      background-color: #555;        /* 호버 시 배경색 변경 */
+      transform: scale(1.05);         /* 호버 시 약간 커지기 */
+    }
+  
+    button:active {
+      transform: scale(0.95);         /* 클릭 시 약간 작아지기 */
+    }
+  
+    /* 썸네일 컨테이너 중앙 정렬 */
+    #thumbnails {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-start;    /* 썸네일들을 왼쪽부터 정렬 */
+      width: 100%;                    /* 컨테이너의 너비를 전체로 설정 */
+      max-width: 1600px;              /* 컨테이너의 최대 너비 설정 (필요에 따라 조정 가능) */
+    }
+  
+    /* 썸네일 스타일 */
+    .thumbnail {
+      border: 3px solid #000;        /* 기본 테두리 색상 (JS에서 색상 변경) */
+      border-radius: 5px;
+      padding: 5px;
+      cursor: move;
+      width: 150px;
+      text-align: center;
+      position: relative;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+    }
+  
+    /* 페이지 번호 라벨 스타일 */
+    .number-label {
+      position: absolute;
+      top: 5px;
+      left: 5px;
+      background-color: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      pointer-events: none; /* 번호 라벨이 클릭되지 않도록 설정 */
+    }
+  
+    /* 썸네일 이미지 */
+    .thumbnail img {
+      max-width: 100%;
+      height: auto;
+      flex-grow: 1;
+    }
+  
+    /* 썸네일 텍스트 */
+    .thumbnail p {
+      margin: 5px 0 0 0;
+      font-size: 14px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
+    }
+  
+    /* 삭제 버튼 스타일 */
+    .delete-button {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: red;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 18px;
+      text-align: center;
+      padding: 0;
+    }
+  
+    /* 병합 버튼 중앙 정렬 */
+    #merge-button {
+      display: block;                /* 버튼을 블록 요소로 변경 */
+      margin: 20px auto;             /* 상하 마진 20px, 좌우 마진 자동 설정으로 중앙 정렬 */
+      padding: 10px 20px;            /* 버튼 패딩 */
+      font-size: 16px;               /* 버튼 글꼴 크기 */
+      cursor: pointer;               /* 커서 변경 */
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+  
+    /* 다운로드 버튼 스타일 (기존 링크를 버튼으로 변경) */
+    #download-button {
+      display: none;                 /* 초기에는 숨김 */
+      margin: 20px auto;             /* 상하 마진 20px, 좌우 마진 자동 설정으로 중앙 정렬 */
+      padding: 10px 20px;            /* 버튼 패딩 */
+      font-size: 16px;               /* 버튼 글꼴 크기 */
+      cursor: pointer;               /* 커서 변경 */
+      background-color: #333;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+  
+    /* 초기화 버튼 스타일 */
+    #reset-button {
+      display: block;                /* 버튼을 블록 요소로 변경 */
+      margin: 10px auto;             /* 상하 마진 10px, 좌우 마진 자동 설정으로 중앙 정렬 */
+      padding: 10px 20px;            /* 버튼 패딩 */
+      font-size: 16px;               /* 버튼 글꼴 크기 */
+      cursor: pointer;               /* 커서 변경 */
+      background-color: #555;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+  </style>
+</head>
+<body>
+  <h1>PDF 편집기</h1>
+  
+  <!-- 파일 드래그 앤 드롭 영역 -->
+  <div id="drop-area">
+    <p>여기에 PDF 파일을 드래그하거나 클릭하여 업로드하세요</p>
+    <input type="file" id="file-input" accept="application/pdf" multiple style="display: none;">
+    <button id="upload-button">파일 선택</button>
+  </div>
+  
+  <!-- 썸네일 컨테이너 -->
+  <div id="thumbnails"></div>
+  
+  <!-- 병합 버튼 -->
+  <button id="merge-button">PDF 합치기</button>
+  
+  <!-- 다운로드 버튼 -->
+  <button id="download-button">합쳐진 PDF 다운로드</button>
+  
+  <!-- 초기화 버튼 -->
+  <button id="reset-button">초기화</button>
+
+  <footer>
+    <p>문의/제안: <a href="mailto:help-whatever@naver.com">help-whatever@naver.com</a></p>
+</footer>
+  
+  <!-- 라이브러리 로드 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.7.107/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  
+  <script>
+    const { PDFDocument } = PDFLib;
+    const dropArea = document.getElementById('drop-area');
+    const fileInput = document.getElementById('file-input');
+    const uploadButton = document.getElementById('upload-button');
+    const thumbnailsContainer = document.getElementById('thumbnails');
+    const mergeButton = document.getElementById('merge-button');
+    const downloadButton = document.getElementById('download-button');
+    const resetButton = document.getElementById('reset-button');
+
+    // 업로드된 모든 페이지를 저장할 배열
+    let allPages = [];
+
+    // 각 PDF 파일의 색상을 저장할 Map
+    const fileColors = new Map();
+
+    // PDF.js 설정
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.7.107/pdf.worker.min.js';
+
+    // 랜덤 색상 생성 함수
+    function getRandomColor() {
+      const letters = '0123456789ABCDEF';
+      let color = '#';
+      for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+      }
+      return color;
+    }
+
+    // 파일 업로드 함수
+    async function handleFiles(files) {
+      for (const file of files) {
+        if (file.type !== 'application/pdf') {
+          alert('PDF 파일만 업로드할 수 있습니다.');
+          continue;
+        }
+
+        // 각 파일에 랜덤 색상 할당
+        const color = getRandomColor();
+        fileColors.set(file, color);
+
+        const arrayBuffer = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const numPages = pdf.numPages;
+
+        for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+          const page = await pdf.getPage(pageNum);
+          const viewport = page.getViewport({ scale: 0.2 });
+          const canvas = document.createElement('canvas');
+          const context = canvas.getContext('2d');
+          canvas.height = viewport.height;
+          canvas.width = viewport.width;
+
+          await page.render({ canvasContext: context, viewport: viewport }).promise;
+
+          const imgData = canvas.toDataURL('image/png');
+
+          // 썸네일 생성
+          const thumbnail = document.createElement('div');
+          thumbnail.className = 'thumbnail';
+          thumbnail.draggable = true;
+          thumbnail.dataset.pdfIndex = allPages.length;
+          thumbnail.style.borderColor = color; // 랜덤 색상 적용
+
+          // 파일명 처리: 길 경우 첫 번째 줄만 표시하고 나머지는 ...
+          const truncatedFileName = file.name.length > 20 ? file.name.substring(0, 17) + '...' : file.name;
+
+          // 현재 페이지의 순서 번호 (allPages.length + 1)
+          const currentNumber = allPages.length + 1;
+
+          thumbnail.innerHTML = `
+            <span class="number-label">${currentNumber}</span>
+            <button class="delete-button" title="삭제">&times;</button>
+            <img src="${imgData}" alt="Page ${pageNum}">
+            <p title="${file.name} - 페이지 ${pageNum}">${truncatedFileName} - 페이지 ${pageNum}</p>
+          `;
+          thumbnailsContainer.appendChild(thumbnail);
+
+          // 삭제 버튼 이벤트 리스너 추가
+          const deleteButton = thumbnail.querySelector('.delete-button');
+          deleteButton.addEventListener('click', () => {
+            const index = parseInt(thumbnail.dataset.pdfIndex, 10);
+            allPages.splice(index, 1);
+            thumbnail.remove();
+            // 썸네일의 data-pdf-index 업데이트 및 번호 재설정
+            updateThumbnailIndices();
+          });
+
+          // allPages 배열에 페이지 추가
+          allPages.push({
+            file,
+            pageNum: pageNum
+          });
+        }
+      }
+    }
+
+    // 썸네일 인덱스 및 번호 업데이트 함수
+    function updateThumbnailIndices() {
+      const thumbnails = thumbnailsContainer.querySelectorAll('.thumbnail');
+      thumbnails.forEach((thumbnail, index) => {
+        thumbnail.dataset.pdfIndex = index;
+        const numberLabel = thumbnail.querySelector('.number-label');
+        if (numberLabel) {
+          numberLabel.textContent = index + 1; // 번호 재설정
+        }
+      });
+    }
+
+    // 드래그 앤 드롭 이벤트 핸들러
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropArea.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.add('dragover');
+      }, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropArea.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropArea.classList.remove('dragover');
+      }, false);
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+      handleFiles(files);
+    });
+
+    // 파일 선택 버튼 클릭 시 파일 입력 클릭
+    uploadButton.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // 파일 선택 시 처리
+    fileInput.addEventListener('change', (e) => {
+      const files = e.target.files;
+      handleFiles(files);
+    });
+
+    // Sortable.js 초기화
+    const sortable = Sortable.create(thumbnailsContainer, {
+      animation: 150,
+      onEnd: function (evt) {
+        // 썸네일이 이동된 후 allPages 배열도 동일하게 재배열
+        const thumbnails = thumbnailsContainer.querySelectorAll('.thumbnail');
+        const newAllPages = [];
+        thumbnails.forEach(thumbnail => {
+          const index = parseInt(thumbnail.dataset.pdfIndex, 10);
+          newAllPages.push(allPages[index]);
+        });
+        allPages = newAllPages;
+        // 썸네일의 data-pdf-index 및 번호 업데이트
+        updateThumbnailIndices();
+      }
+    });
+
+    // PDF 병합 함수
+    mergeButton.addEventListener('click', async () => {
+      if (allPages.length === 0) {
+        alert('병합할 PDF 페이지가 없습니다.');
+        return;
+      }
+
+      // 새로운 PDF 문서 생성
+      const mergedPdf = await PDFDocument.create();
+
+      for (const pageInfo of allPages) {
+        const arrayBuffer = await pageInfo.file.arrayBuffer();
+        const pdf = await PDFDocument.load(arrayBuffer);
+        const [copiedPage] = await mergedPdf.copyPages(pdf, [pageInfo.pageNum - 1]);
+        mergedPdf.addPage(copiedPage);
+      }
+
+      // 합쳐진 PDF 저장
+      const mergedPdfBytes = await mergedPdf.save();
+
+      // Blob 생성 및 다운로드 버튼 설정
+      const blob = new Blob([mergedPdfBytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      downloadButton.style.display = 'block';  /* 버튼 표시 */
+      downloadButton.onclick = () => {
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = '합쳐진.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      };
+      alert("pdf 합치기가 완료되었습니다.")
+    });
+
+    // 초기화 버튼 클릭 시 페이지 새로고침
+    resetButton.addEventListener('click', () => {
+      location.reload();
+    });
+  </script>
+</body>
+</html>

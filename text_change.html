@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>다중 찾아바꾸기 도구</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <style>
+        /* 기본 스타일 */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Noto Sans KR', sans-serif;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        /* 복사 버튼 스타일 */
+        #copy-button-header {
+            background-color: #6200ea;
+            border: none;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            font-size: 16px;
+            margin-left: 20px;
+        }
+
+        #copy-button-header:hover {
+            background-color: #7b3fe4;
+        }
+
+        #copy-button-header:active {
+            background-color: #5a00c2;
+            transform: scale(0.95);
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            max-width: 1700px;
+            width: 100%;
+            margin: auto;
+            flex: 1;
+            height: 100%;
+        }
+
+        .column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 열 너비 비율: 2:3:3 */
+        .column.replace-column {
+            flex: 2;
+        }
+
+        .column.input-column,
+        .column.result-column {
+            flex: 3;
+        }
+
+        .section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+            resize: vertical;
+            font-size: 16px;
+            height: 100%;
+        }
+
+        textarea:focus, input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 5px #6200ea;
+        }
+
+        /* 찾아바꾸기 쌍 스타일 */
+        .replace-pair {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .replace-pair input {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .replace-pair button {
+            background-color: #ff9800; /* 연청색에서 오렌지색으로 변경 */
+            border: none;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            font-size: 16px;
+        }
+
+        .replace-pair button:hover {
+            background-color: #fb8c00;
+        }
+
+        .replace-pair button:active {
+            background-color: #f57c00;
+            transform: scale(0.95);
+        }
+
+        /* 추가 버튼 스타일 */
+        #add-pair {
+            background-color: #4caf50; /* 연청색 대신 초록색 */
+            margin-top: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            font-size: 16px;
+            color: #ffffff;
+        }
+
+        #add-pair:hover {
+            background-color: #43a047;
+        }
+
+        #add-pair:active {
+            background-color: #388e3c;
+            transform: scale(0.95);
+        }
+
+        /* 텍스트 영역 하단의 글자수 표시 */
+        .char-count {
+            margin-top: 5px;
+            font-size: 14px;
+            color: #bbbbbb;
+            text-align: right;
+        }
+
+        /* 결과창과 복사 버튼을 감싸는 래퍼 제거 */
+
+        /* 토스트 메시지 스타일 */
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 5px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 17px;
+        }
+
+        #toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 1.5s;
+        }
+
+        @keyframes fadein {
+            from { bottom: 0; opacity: 0; }
+            to { bottom: 30px; opacity: 1; }
+        }
+
+        @keyframes fadeout {
+            from { bottom: 30px; opacity: 1; }
+            to { bottom: 0; opacity: 0; }
+        }
+
+        /* 반응형 디자인 */
+        @media (max-width: 1200px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .column.replace-column,
+            .column.input-column,
+            .column.result-column {
+                flex: none;
+                width: 100%;
+            }
+
+            /* Header의 복사 버튼을 세로 정렬 */
+            .header {
+                flex-direction: column;
+            }
+
+            #copy-button-header {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>다중 찾아바꾸기 도구</h1>
+        <button id="copy-button-header">복사</button>
+    </div>
+    <div class="container">
+        <!-- 1열: 찾을 단어 & 바꿀 단어 -->
+        <div class="column replace-column">
+            <div class="section">
+                <label>찾을 단어 &amp; 바꿀 단어:</label>
+                <div id="replace-container">
+                    <div class="replace-pair">
+                        <input type="text" class="find-word" placeholder="찾을 단어">
+                        <input type="text" class="replace-word" placeholder="바꿀 단어">
+                        <button class="remove-pair">-</button>
+                    </div>
+                </div>
+                <button id="add-pair">+ 추가</button>
+            </div>
+        </div>
+
+        <!-- 2열: 입력창 -->
+        <div class="column input-column">
+            <div class="section">
+                <label for="input-text">입력창:</label>
+                <textarea id="input-text" rows="15" placeholder="여기에 텍스트를 입력하세요..."></textarea>
+                <div class="char-count" id="input-char-count">글자수: 0</div>
+            </div>
+        </div>
+
+        <!-- 3열: 결과창 -->
+        <div class="column result-column">
+            <div class="section">
+                <label for="result-text">결과창:</label>
+                <textarea id="result-text" rows="15" readonly placeholder="결과가 여기에 표시됩니다..."></textarea>
+                <div class="char-count" id="result-char-count">글자수: 0</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스트 메시지 -->
+    <div id="toast">복사되었습니다.</div>
+
+    <script>
+        const inputText = document.getElementById('input-text');
+        const resultText = document.getElementById('result-text');
+        const replaceContainer = document.getElementById('replace-container');
+        const addPairButton = document.getElementById('add-pair');
+        const copyButtonHeader = document.getElementById('copy-button-header');
+        const toast = document.getElementById('toast');
+        const inputCharCount = document.getElementById('input-char-count');
+        const resultCharCount = document.getElementById('result-char-count');
+
+        // Function to create a new replace pair
+        function createReplacePair() {
+            const pairDiv = document.createElement('div');
+            pairDiv.classList.add('replace-pair');
+
+            const findInput = document.createElement('input');
+            findInput.type = 'text';
+            findInput.classList.add('find-word');
+            findInput.placeholder = '찾을 단어';
+
+            const replaceInput = document.createElement('input');
+            replaceInput.type = 'text';
+            replaceInput.classList.add('replace-word');
+            replaceInput.placeholder = '바꿀 단어';
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = '-';
+            removeButton.classList.add('remove-pair');
+
+            // Event listener for removing the pair
+            removeButton.addEventListener('click', () => {
+                replaceContainer.removeChild(pairDiv);
+                replaceText();
+            });
+
+            // Event listeners to trigger replacement on input
+            findInput.addEventListener('input', replaceText);
+            replaceInput.addEventListener('input', replaceText);
+
+            pairDiv.appendChild(findInput);
+            pairDiv.appendChild(replaceInput);
+            pairDiv.appendChild(removeButton);
+
+            return pairDiv;
+        }
+
+        // Add initial remove button functionality
+        document.querySelectorAll('.remove-pair').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const pairDiv = e.target.parentElement;
+                replaceContainer.removeChild(pairDiv);
+                replaceText();
+            });
+        });
+
+        // Function to replace text based on all replace pairs
+        function replaceText() {
+            let text = inputText.value;
+            const pairs = replaceContainer.querySelectorAll('.replace-pair');
+
+            pairs.forEach(pair => {
+                const find = pair.querySelector('.find-word').value;
+                const replace = pair.querySelector('.replace-word').value;
+                if (find) {
+                    try {
+                        const regex = new RegExp(find, 'gi');
+                        text = text.replace(regex, replace);
+                    } catch (e) {
+                        console.error(`Invalid RegExp pattern: ${find}`, e);
+                    }
+                }
+            });
+
+            resultText.value = text;
+            updateCharCount();
+        }
+
+        // Function to update character counts
+        function updateCharCount() {
+            inputCharCount.textContent = `글자수: ${inputText.value.length}`;
+            resultCharCount.textContent = `글자수: ${resultText.value.length}`;
+        }
+
+        // Event listener for input text
+        inputText.addEventListener('input', () => {
+            replaceText();
+            updateCharCount();
+        });
+
+        // Event listener for adding a new replace pair
+        addPairButton.addEventListener('click', () => {
+            const newPair = createReplacePair();
+            replaceContainer.appendChild(newPair);
+            replaceText();
+        });
+
+        // Event listeners for existing replace pairs
+        replaceContainer.addEventListener('input', replaceText);
+
+        // Function to show toast message
+        function showToast(message) {
+            toast.textContent = message;
+            toast.className = "show";
+            setTimeout(() => {
+                toast.className = toast.className.replace("show", "");
+            }, 2000);
+        }
+
+        // Event listener for copy button in header
+        copyButtonHeader.addEventListener('click', () => {
+            const textToCopy = resultText.value;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showToast("복사되었습니다.");
+            }).catch(err => {
+                console.error('복사 실패:', err);
+                showToast("복사에 실패했습니다.");
+            });
+        });
+
+        // Initialize by triggering the replace function
+        replaceText();
+        updateCharCount();
+    </script>
+</body>
+</html>

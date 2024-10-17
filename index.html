@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>기능 선택 페이지</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    
+</head>
+<style>
+.textarea-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1700px;
+            width: 100%;
+            margin: auto;
+            flex: 1;
+            height: 100%;
+        }
+
+.column {
+            display: flex;
+            flex-direction: column;
+}
+
+.column.replace-column {
+    flex: 2;
+}
+
+.column.input-column,
+.column.result-column {
+    flex: 3;
+}
+.section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+/* 찾아바꾸기 쌍 스타일 */
+.replace-pair {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .replace-pair input {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .replace-pair button {
+            background-color: #ff9800; /* 연청색에서 오렌지색으로 변경 */
+            border: none;
+            color: #ffffff;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            font-size: 16px;
+        }
+
+        .replace-pair button:hover {
+            background-color: #fb8c00;
+        }
+
+        .replace-pair button:active {
+            background-color: #f57c00;
+            transform: scale(0.95);
+        }
+
+        /* 추가 버튼 스타일 */
+        #add-pair {
+            background-color: #4caf50; /* 연청색 대신 초록색 */
+            margin-top: 10px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.1s;
+            font-size: 16px;
+            color: #ffffff;
+        }
+
+        #add-pair:hover {
+            background-color: #43a047;
+        }
+
+        #add-pair:active {
+            background-color: #388e3c;
+            transform: scale(0.95);
+        }
+</style>
+<body>
+    <main>
+        <div class="content">
+            <section class="button-container">
+                <a href="./excel_seperator.html" class="action-button">엑셀 쪼개기</a>
+                <a href="./ppt_extractor.html" class="action-button">PPT 추출</a>
+                <a href="./pdf_editor.html" class="action-button">PDF 이어붙이기</a>
+                <a href="mailto:help-whatever@naver.com" class="action-button inquiry-button">문의/제안하기</a> <!-- 문의하기 버튼을 같은 섹션에 포함 -->
+            </section>
+            <section class="textarea-container">
+                <div class="column replace-column">
+                    <div class="section">
+                        <label>찾을 단어 &amp; 바꿀 단어:</label>
+                        <div id="replace-container">
+                            <div class="replace-pair">
+                                <input type="text" class="find-word" placeholder="찾을 단어">
+                                <input type="text" class="replace-word" placeholder="바꿀 단어">
+                                <button class="remove-pair">-</button>
+                            </div>
+                        </div>
+                        <button id="add-pair">+ 추가</button>
+                    </div>
+                </div>
+                <div class = "column input-column">
+                    <textarea id="textarea1"></textarea>
+                    <div id="counter1">문자 수: 0</div>
+                </div>
+                <div class = "column result-column">
+                    <textarea id="textarea2"></textarea>
+                    <div id="counter2">문자 수: 0</div>
+                </div>
+            </section>
+            <section class="button-container" style="grid-template-columns: repeat(5, 1fr);">
+                <a class ="action-button textarea-button" id ="btn1">대문자변경</a>
+                <a class ="action-button textarea-button" id ="btn2">소문자변경</a>
+                <a class ="action-button textarea-button" id ="btn3">줄바꿈→띄어쓰기</a>
+                <a class ="action-button textarea-button" id ="btn5">리스트 문자열</a>
+                <a class ="action-button textarea-button" id ="btn4">복사</a>
+            </section>
+        </div>
+        <div id="copy-message">복사되었습니다</div>
+    </main>
+    <footer>
+        <p>문의/제안: <a href="mailto:help-whatever@naver.com">help-whatever@naver.com</a></p>
+    </footer>
+    <script>
+       const buttonStates = {
+            btn1: false,  // 대문자 변경
+            btn2: false,  // 소문자 변경
+            btn3: false,  // 줄바꿈 띄어쓰기
+            btn5: false,
+        };
+
+        const textarea1 = document.getElementById('textarea1');
+        const textarea2 = document.getElementById('textarea2');
+        const counter1 = document.getElementById('counter1');
+        const counter2 = document.getElementById('counter2');
+        const buttons = document.querySelectorAll('.textarea-button');
+        const copyButton = document.getElementById('btn4');
+        const replaceContainer = document.getElementById('replace-container');
+        const addPairButton = document.getElementById('add-pair');
+
+        // textarea1 입력 시 실시간 반영 및 글자 수 계산
+        function handleTextChange() {
+            replaceText();
+            let val = textarea2.value;
+
+            // 대문자 변경이 활성화된 경우
+            if (buttonStates['btn1']) {
+                val = val.toUpperCase();
+            }
+            // 소문자 변경이 활성화된 경우
+            if (buttonStates['btn2']) {
+                val = val.toLowerCase();
+            }
+            // 줄바꿈을 띄어쓰기로 변경
+            if (buttonStates['btn3']) {
+                val = val.replace(/\n/g, ' ');
+            }
+
+            if (buttonStates['btn5']) {
+                val = formatLines(val);
+            }
+            // 변환된 값을 textarea2에 반영
+            textarea2.value = val;
+            updateCharCount();
+        }
+
+        // textarea1에 입력 시 이벤트 핸들러 추가
+        textarea1.addEventListener('input', handleTextChange);
+        textarea2.addEventListener('input', () => {
+            updateCharCount();
+        });
+        replaceContainer.addEventListener('input', replaceText);
+        
+
+        // Toggle on/off for buttons
+        
+        buttons.forEach(button => {
+            button.addEventListener('click', function() {
+                
+                const buttonId = this.id;  // 버튼의 ID를 가져옴
+                if (buttonId === 'btn4') return;
+                // 대문자와 소문자는 동시에 켜지지 않도록 처리
+                if (buttonId === 'btn1' && buttonStates['btn2']) {
+                    buttonStates['btn2'] = false;
+                    document.getElementById('btn2').classList.remove('active');
+                    document.getElementById('btn2').style.backgroundColor = '';
+                    document.getElementById('btn2').style.color = '';
+                }
+                if (buttonId === 'btn2' && buttonStates['btn1']) {
+                    buttonStates['btn1'] = false;
+                    document.getElementById('btn1').classList.remove('active');
+                    document.getElementById('btn1').style.backgroundColor = '';
+                    document.getElementById('btn1').style.color = '';
+                }
+
+                // 현재 상태를 반전시킴 (true -> false, false -> true)
+                buttonStates[buttonId] = !buttonStates[buttonId];
+
+                // 상태에 따른 스타일 변경
+                if (buttonStates[buttonId]) {
+                    this.classList.add('active');
+                    this.style.backgroundColor = '#d0ff85'; // On 상태
+                    this.style.color = 'black';
+                } else {
+                    this.classList.remove('active');
+                    this.style.backgroundColor = ''; // 비활성화 상태의 배경색 복원
+                    this.style.color = '';  // 비활성화 상태의 글씨 색 복원
+                }
+
+                // 상태 변경 후 즉시 텍스트 반영
+                handleTextChange();
+            });
+        });
+
+        // 복사 버튼 클릭 이벤트
+        
+        copyButton.addEventListener('mousedown', function() {
+            copyButton.style.backgroundColor = '#ff453a99'; // 클릭되는 동안 색 변경
+        });
+        copyButton.addEventListener('mouseup', function() {
+            copyButton.style.backgroundColor = ''; // 클릭 해제 시 색 복원
+        });
+
+        copyButton.addEventListener('click', function() {
+            // textarea2의 내용을 클립보드에 복사
+            navigator.clipboard.writeText(textarea2.value).then(function() {
+                // 복사 완료 메시지 표시
+                const copyMessage = document.getElementById('copy-message');
+                copyMessage.style.display = 'block';  // 메시지 표시
+                setTimeout(function() {
+                    copyMessage.style.display = 'none';  // 2초 후 메시지 숨김
+                }, 2000);
+
+            }, function(err) {
+                console.error('복사 실패: ', err);
+            });
+        });
+
+        function formatLines(input) {
+            const lines = input.split('\n')
+                .filter(line => line.trim() !== ''); // 공백인 줄 제거
+            let index = 0;
+            const formattedLines = lines.map((line) => {
+                if (index === 0) {
+                    index++;
+                    return `'${line}'`;
+                } else {
+                    return `, '${line}'`;
+                }
+            });
+            return formattedLines.join('');
+        }
+        
+
+        // Function to create a new replace pair
+        function createReplacePair() {
+            const pairDiv = document.createElement('div');
+            pairDiv.classList.add('replace-pair');
+
+            const findInput = document.createElement('input');
+            findInput.type = 'text';
+            findInput.classList.add('find-word');
+            findInput.placeholder = '찾을 단어';
+
+            const replaceInput = document.createElement('input');
+            replaceInput.type = 'text';
+            replaceInput.classList.add('replace-word');
+            replaceInput.placeholder = '바꿀 단어';
+
+            const removeButton = document.createElement('button');
+            removeButton.textContent = '-';
+            removeButton.classList.add('remove-pair');
+
+            // Event listener for removing the pair
+            removeButton.addEventListener('click', () => {
+                replaceContainer.removeChild(pairDiv);
+                replaceText();
+            });
+
+            // Event listeners to trigger replacement on input
+            findInput.addEventListener('input', replaceText);
+            replaceInput.addEventListener('input', replaceText);
+
+            pairDiv.appendChild(findInput);
+            pairDiv.appendChild(replaceInput);
+            pairDiv.appendChild(removeButton);
+
+            return pairDiv;
+        }
+
+        // Add initial remove button functionality
+        document.querySelectorAll('.remove-pair').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const pairDiv = e.target.parentElement;
+                replaceContainer.removeChild(pairDiv);
+                replaceText();
+            });
+        });
+
+        // Function to replace text based on all replace pairs
+        function replaceText() {
+            let text = textarea1.value;
+            const pairs = replaceContainer.querySelectorAll('.replace-pair');
+
+            pairs.forEach(pair => {
+                const find = pair.querySelector('.find-word').value;
+                const replace = pair.querySelector('.replace-word').value;
+                if (find) {
+                    try {
+                        const regex = new RegExp(find, 'gi');
+                        text = text.replace(regex, replace);
+                    } catch (e) {
+                        console.error(`Invalid RegExp pattern: ${find}`, e);
+                    }
+                }
+            });
+
+            textarea2.value = text;
+            updateCharCount();
+        }
+
+        // Function to update character counts
+        function updateCharCount() {
+            counter1.textContent = `문자 수: ${textarea1.value.length}`;
+            counter2.textContent = `문자 수: ${textarea2.value.length}`;
+        }
+
+        // Event listener for adding a new replace pair
+        addPairButton.addEventListener('click', () => {
+            const newPair = createReplacePair();
+            replaceContainer.appendChild(newPair);
+            replaceText();
+        });
+
+        // Initialize by triggering the replace function
+        replaceText();
+        updateCharCount();
+    </script>
+</body>
+</html>
