@@ -1,8 +1,4 @@
-<div>
-서버 이전 중입니다.
-2024-10-19 복구 예정입니다.
-</div>
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -10,8 +6,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>PPT 추출</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{{ url_for('static', filename='excel_seperator_styles.css') }}">
+    <link rel="stylesheet" href="excel_seperator_styles.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xml2js/0.4.23/xml2js.min.js"></script>
 </head>
 <style>
     /* Badge Style */
@@ -52,9 +49,7 @@
     <header>
         <h1>PPT 추출 기능</h1>
     </header>
-
     <main>
-
         <section class="upload-section">
             <h2>PPT 파일 업로드</h2>
             <form id="excel-upload-form" enctype="multipart/form-data">
@@ -62,7 +57,7 @@
                     <p id="file-description">파일을 여기에 드래그 앤 드롭하거나 클릭하여 파일을 선택하세요.</p>
                     <input type="file" id="excel-file" name="excel-file" accept=".pptx" style="display: none;" required>
                     <div id="file-info" style="display: none;">
-                        <img id="file-icon" src="{{ url_for('static', filename='file_icon.png') }}" style="width: 30px; height: 30px; margin-right:10px"alt="파일 아이콘">
+                        <img id="file-icon" src="./file_icon.png" style="width: 30px; height: 30px; margin-right:10px"alt="파일 아이콘">
                         <p>
                             <span id="file-name">파일명: </span>
                             <span id="file-size">파일 크기: </span>
@@ -106,6 +101,6 @@
     <footer>
         <p>문의/제안: <a href="mailto:help-whatever@naver.com">help-whatever@naver.com</a></p>
     </footer>
-    <script src="{{ url_for('static', filename='ppt_extractor.js') }}"></script>
+    <script src="./script/ppt_extractor.js"></script>
 </body>
-</html> -->
+</html>
