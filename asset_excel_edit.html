@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>엑셀가공</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles2.css">
+</head>
+<body>
+    <h1>엑셀가공</h1>
+    <main>
+        <div class="content">
+            <div class="dropzone" id="dropzone">
+                엑셀 파일을 여기에 드래그하거나 클릭하여 업로드
+                <input type="file" id="file-input" accept=".xlsx, .xls" />
+            </div>
+            <div class="file-info" id="file-info">파일을 선택해주세요.</div>
+            <div class="button-container">
+                <button class="action-button convert-button" id="convert-button" disabled>변환</button>
+                <button class="action-button reset-button" id="reset-button" disabled>리셋</button>
+            </div>
+            <a href="#" id="download-link">다운로드</a>
+        </div>
+    </main>
+    <footer>
+        <p>문의/제안: <a href="mailto:help-whatever@naver.com">help-whatever@naver.com</a></p>
+    </footer>
+    <div id="copy-message">파일이 준비되었습니다!</div>
+
+    <!-- SheetJS 라이브러리 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        const dropzone = document.getElementById('dropzone');
+        const fileInput = document.getElementById('file-input');
+        const fileInfo = document.getElementById('file-info');
+        const convertButton = document.getElementById('convert-button');
+        const resetButton = document.getElementById('reset-button');
+        const downloadLink = document.getElementById('download-link');
+        const copyMessage = document.getElementById('copy-message');
+
+        let workbook; // 원본 워크북
+        let modifiedWorkbook; // 수정된 워크북
+
+        // 파일 드래그 오버
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+        });
+
+        // 파일 드롭
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        // 파일 클릭하여 업로드
+        dropzone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // 파일 선택
+        fileInput.addEventListener('change', (e) => {
+            const files = e.target.files;
+            handleFiles(files);
+        });
+
+        // 파일 처리 함수
+        function handleFiles(files) {
+            if (files.length === 0) {
+                fileInfo.textContent = '파일을 선택해주세요.';
+                return;
+            }
+            const file = files[0];
+            if (!file.name.match(/\.(xlsx|xls)$/)) {
+                fileInfo.textContent = '엑셀 파일만 업로드할 수 있습니다.';
+                return;
+            }
+            fileInfo.textContent = `선택된 파일: ${file.name}`;
+            convertButton.disabled = false;
+            resetButton.disabled = false;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                workbook = XLSX.read(data, { type: 'array' });
+                modifiedWorkbook = XLSX.utils.book_new();
+                // 복사
+                workbook.SheetNames.forEach(sheetName => {
+                    const worksheet = workbook.Sheets[sheetName];
+                    XLSX.utils.book_append_sheet(modifiedWorkbook, XLSX.utils.sheet_to_json(worksheet, { raw: false, defval: '' }), sheetName);
+                });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // 변환 버튼 클릭
+        convertButton.addEventListener('click', () => {
+            if (!workbook) {
+                alert('먼저 파일을 업로드해주세요.');
+                return;
+            }
+            processWorkbook();
+        });
+
+        // 리셋 버튼 클릭
+        resetButton.addEventListener('click', () => {
+            modifiedWorkbook = XLSX.utils.book_new();
+            workbook.SheetNames.forEach(sheetName => {
+                const worksheet = workbook.Sheets[sheetName];
+                XLSX.utils.book_append_sheet(modifiedWorkbook, XLSX.utils.sheet_to_json(worksheet, { raw: false, defval: '' }), sheetName);
+            });
+            downloadLink.style.display = 'none';
+            copyMessage.style.display = 'none';
+            alert('변경 사항이 리셋되었습니다.');
+        });
+
+        // 워크북 처리 함수
+        function processWorkbook() {
+            const originalSheetName = workbook.SheetNames[0];
+            const originalSheet = workbook.Sheets[originalSheetName];
+            let sheet = XLSX.utils.sheet_to_json(originalSheet, { header: 1, raw: false, defval: '' });
+
+            // 1. A2 셀의 값이 숫자로 변환 불가능하면 2번째 행 삭제
+            let a2 = sheet[1][0]; // A2
+            if (isNaN(Number(a2))) {
+                sheet.splice(1, 1); // 2번째 행 삭제
+            }
+
+            // 2. I, S, T, U, V, W 열을 일반으로 변경
+            const generalColumns = ['I', 'S', 'T', 'U', 'V', 'W'];
+            generalColumns.forEach(col => {
+                const colIndex = XLSX.utils.decode_col(col) - 0; // 0-based index
+                sheet.forEach((row, rowIndex) => {
+                    if (row[colIndex] !== undefined) {
+                        sheet[rowIndex][colIndex] = row[colIndex].toString();
+                    }
+                });
+            });
+
+            // 3. A열을 일반으로 변경
+            sheet.forEach((row, rowIndex) => {
+                if (row[0] !== undefined) {
+                    sheet[rowIndex][0] = row[0].toString();
+                }
+            });
+
+            // 4. B열과 C열에서 문자열 교체
+            ['B', 'C'].forEach(col => {
+                const colIndex = XLSX.utils.decode_col(col) - 0; // 0-based index
+                sheet.forEach((row, rowIndex) => {
+                    if (row[colIndex]) {
+                        row[colIndex] = row[colIndex].replace(/사업단/g, '').replace(/사업본부/g, '본부');
+                    }
+                });
+            });
+
+            // 5. O열에서 '장기' 또는 '일반'을 '손보'로 변경
+            const oColIndex = XLSX.utils.decode_col('O') - 0;
+            sheet.forEach((row, rowIndex) => {
+                if (row[oColIndex] === '장기' || row[oColIndex] === '일반') {
+                    row[oColIndex] = '손보';
+                }
+            });
+
+            // 7. U열과 V열 사이에 열 하나 추가하고 V1 셀에 0 작성
+            const uColIndex = XLSX.utils.decode_col('U');
+            sheet.forEach((row, rowIndex) => {
+                if (rowIndex === 0) {
+                    row.splice(uColIndex, 0, '0'); // 헤더에 '0' 추가
+                } else {
+                    row.splice(uColIndex, 0, ''); // 빈 셀 추가
+                }
+            });
+
+            // 8. AB열 뒤에 열 7개 추가하고 1행에 1-7 작성
+            const abColIndex = XLSX.utils.decode_col('AB') + 1; // AB 다음 열
+            for (let i = 0; i < 7; i++) {
+                sheet.forEach((row, rowIndex) => {
+                    if (rowIndex === 0) {
+                        row.splice(abColIndex + i, 0, (i + 1).toString());
+                    } else {
+                        row.splice(abColIndex + i, 0, '');
+                    }
+                });
+            }
+
+            // 9. AH열 뒤에 열 2개 추가하고 1행에 8,9 작성
+            const ahColIndex = XLSX.utils.decode_col('AH') + 1;
+            for (let i = 0; i < 2; i++) {
+                sheet.forEach((row, rowIndex) => {
+                    if (rowIndex === 0) {
+                        row.splice(ahColIndex + i, 0, (8 + i).toString());
+                    } else {
+                        row.splice(ahColIndex + i, 0, '');
+                    }
+                });
+            }
+
+            // 10. D열 삭제
+            const dColIndex = XLSX.utils.decode_col('D') - 0;
+            sheet.forEach((row) => {
+                row.splice(dColIndex, 1);
+            });
+
+            // 11. S열을 복사하여 AO열 바로 뒤에 AP열로 추가
+            const sColIndex = XLSX.utils.decode_col('S') - 0;
+            const apColIndex = XLSX.utils.decode_col('AO') + 1;
+            sheet.forEach((row, rowIndex) => {
+                const sValue = row[sColIndex] || '';
+                row.splice(apColIndex, 0, sValue);
+            });
+
+            // 12. AP1 셀에 '3W건수' 작성
+            if (sheet[0]) {
+                sheet[0][apColIndex] = '3W건수';
+            }
+
+            // 시트 이름을 '총괄'으로 변경
+            const newSheetName = '총괄';
+
+            // 새로운 워크북 생성
+            const newWorkbook = XLSX.utils.book_new();
+            const newWorksheet = XLSX.utils.aoa_to_sheet(sheet);
+
+            // 시트 탭 색상을 주황색으로 변경
+            newWorksheet['!tabColor'] = { rgb: "FFA500" };
+
+            // 시트 추가
+            XLSX.utils.book_append_sheet(newWorkbook, newWorksheet, newSheetName);
+
+            // 수정된 워크북 저장
+            const wbout = XLSX.write(newWorkbook, { bookType: 'xlsx', type: 'array' });
+            const blob = new Blob([wbout], { type: 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
+
+            // 다운로드 링크 설정
+            downloadLink.href = url;
+            downloadLink.download = 'modified_' + (workbook.SheetNames[0] || 'sheet') + '.xlsx';
+            downloadLink.style.display = 'block';
+
+            // 파일 준비 완료 메시지 표시
+            copyMessage.style.display = 'block';
+            setTimeout(() => {
+                copyMessage.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -7,99 +7,115 @@
     <title>기능 선택 페이지</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
-    
 </head>
 <style>
-.textarea-container {
-            display: flex;
-            gap: 20px;
-            max-width: 1700px;
-            width: 100%;
-            margin: auto;
-            flex: 1;
-            height: 100%;
-        }
+    .textarea-container {
+                display: flex;
+                gap: 20px;
+                max-width: 1700px;
+                width: 100%;
+                margin: auto;
+                flex: 1;
+                height: 100%;
+            }
 
-.column {
-            display: flex;
-            flex-direction: column;
-}
+    .column {
+                display: flex;
+                flex-direction: column;
+    }
 
-.column.replace-column {
-    flex: 2;
-}
+    .column.replace-column {
+        flex: 2;
+    }
 
-.column.input-column,
-.column.result-column {
-    flex: 3;
-}
-.section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-}
-/* 찾아바꾸기 쌍 스타일 */
-.replace-pair {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-        }
+    .column.input-column,
+    .column.result-column {
+        flex: 3;
+    }
+    .section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
+    /* 찾아바꾸기 쌍 스타일 */
+    .replace-pair {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+    }
 
-        .replace-pair input {
-            flex: 1;
-            margin-right: 10px;
-        }
+    .replace-pair input {
+        flex: 1;
+        margin-right: 10px;
+    }
 
-        .replace-pair button {
-            background-color: #ff9800; /* 연청색에서 오렌지색으로 변경 */
-            border: none;
-            color: #ffffff;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
-            font-size: 16px;
-        }
+    .replace-pair button {
+        background-color: #ff9800; /* 연청색에서 오렌지색으로 변경 */
+        border: none;
+        color: #ffffff;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.1s;
+        font-size: 16px;
+    }
 
-        .replace-pair button:hover {
-            background-color: #fb8c00;
-        }
+    .replace-pair button:hover {
+        background-color: #fb8c00;
+    }
 
-        .replace-pair button:active {
-            background-color: #f57c00;
-            transform: scale(0.95);
-        }
+    .replace-pair button:active {
+        background-color: #f57c00;
+        transform: scale(0.95);
+    }
 
-        /* 추가 버튼 스타일 */
-        #add-pair {
-            background-color: #4caf50; /* 연청색 대신 초록색 */
-            margin-top: 10px;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.1s;
-            font-size: 16px;
-            color: #ffffff;
-        }
+    /* 추가 버튼 스타일 */
+    #add-pair {
+        background-color: #4caf50; /* 연청색 대신 초록색 */
+        margin-top: 10px;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.1s;
+        font-size: 16px;
+        color: #ffffff;
+    }
 
-        #add-pair:hover {
-            background-color: #43a047;
-        }
+    #add-pair:hover {
+        background-color: #43a047;
+    }
 
-        #add-pair:active {
-            background-color: #388e3c;
-            transform: scale(0.95);
-        }
+    #add-pair:active {
+        background-color: #388e3c;
+        transform: scale(0.95);
+    }
+    /* "New!" 뱃지 스타일 */
+    .action-button.new::after {
+        content: 'New!';
+        position: absolute;
+        top: -10px; /* 버튼 위쪽으로 위치 */
+        left: -10px; /* 버튼 오른쪽으로 위치 */
+        background-color: #ff453a; /* 뱃지 배경색 */
+        color: white; /* 뱃지 텍스트 색상 */
+        padding: 5px 10px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        border-radius: 5px;
+        transform: rotate(-20deg); /* 비스듬하게 회전 */
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        white-space: nowrap;
+    }
 </style>
 <body>
     <main>
         <div class="content">
             <section class="button-container">
-                <a href="./excel_seperator.html" class="action-button">엑셀 쪼개기</a>
+                <!-- <a href="./excel_seperator.html" class="action-button">엑셀 쪼개기</a> -->
                 <a href="./ppt_extractor.html" class="action-button">PPT 추출</a>
                 <a href="./pdf_editor.html" class="action-button">PDF 이어붙이기</a>
+                <a href="./pdf_to_jpg.html" class="action-button new">PDF 이미지 변환</a>
                 <a href="mailto:help-whatever@naver.com" class="action-button inquiry-button">문의/제안하기</a> <!-- 문의하기 버튼을 같은 섹션에 포함 -->
             </section>
             <section class="textarea-container">
