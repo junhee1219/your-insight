@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title id ="title">폴더 트리 내보내기</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="./favicons/favicon-16x16.png">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles3.css">
+</head>
+<body>
+    <h1>폴더 트리 내보내기</h1>
+    <!-- 폴더 선택 및 버튼 컨테이너 -->
+    <div class="container">
+        <!-- 폴더 선택 입력 -->
+        <input type="file" id="folderInput" webkitdirectory mozdirectory directory multiple />
+        <!-- 엑셀로 내보내기 버튼 -->
+        <button id="exportBtn">엑셀로 내보내기</button>
+    </div>
+    <!-- 폴더 및 파일 경로를 표시할 영역 -->
+    <ul id="fileList"></ul>
+
+    <!-- SheetJS 라이브러리 추가 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        const folderInput = document.getElementById('folderInput');
+        const fileList = document.getElementById('fileList');
+        const exportBtn = document.getElementById('exportBtn');
+
+        let filesData = [];
+
+        // 폴더 선택 시 이벤트 핸들러
+        folderInput.addEventListener('change', function(event) {
+            const files = event.target.files;
+            filesData = [];
+            fileList.innerHTML = '';
+
+            const paths = [];
+            for (let i = 0; i < files.length; i++) {
+                const path = files[i].webkitRelativePath;
+                paths.push(path);
+            }
+
+            // 트리 구조 생성
+            const tree = buildTree(paths);
+
+            // 트리 구조 표시
+            displayTree(tree, fileList);
+
+            // 엑셀로 내보내기 위한 데이터 준비
+            filesData = flattenTree(tree);
+        });
+
+        // 엑셀로 내보내기 버튼 클릭 시 이벤트 핸들러
+        exportBtn.addEventListener('click', function() {
+            exportToExcel(filesData);
+        });
+
+        // 트리 구조 생성 함수
+        function buildTree(paths) {
+            const root = {};
+            paths.forEach(function(path) {
+                const parts = path.split('/');
+                let current = root;
+                parts.forEach(function(part) {
+                    if (!current[part]) {
+                        current[part] = {};
+                    }
+                    current = current[part];
+                });
+            });
+            return root;
+        }
+
+        // 트리 구조를 화면에 표시하는 함수
+        function displayTree(node, parentElement) {
+            for (const key in node) {
+                const li = document.createElement('li');
+                li.textContent = key;
+
+                // 폴더인지 파일인지 판단 (자식이 있는 경우 폴더)
+                if (Object.keys(node[key]).length > 0) {
+                    li.classList.add('folder');
+                    const ul = document.createElement('ul');
+                    li.appendChild(ul);
+                    displayTree(node[key], ul);
+                } else {
+                    li.classList.add('file');
+                }
+
+                parentElement.appendChild(li);
+            }
+        }
+
+        // 트리 구조를 평탄화하여 엑셀로 내보낼 데이터 생성
+        function flattenTree(node, path = [], result = []) {
+            for (const key in node) {
+                const currentPath = [...path, key];
+                result.push({ path: currentPath.join('/') });
+                flattenTree(node[key], currentPath, result);
+            }
+            return result;
+        }
+
+        // 엑셀로 내보내는 함수
+        function exportToExcel(data) {
+            const ws_data = data.map(item => [item.path]);
+            const ws = XLSX.utils.aoa_to_sheet(ws_data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, '폴더구조');
+
+            XLSX.writeFile(wb, '폴더구조.xlsx');
+        }
+
+        // 시각을 업데이트하는 함수
+        function updateTime() {
+            const now = new Date();
+
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            // 오전/오후 설정
+            const period = hours >= 12 ? '오후' : '오전';
+
+            // 12시간 형식으로 변환
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0시는 12로 표시
+
+            // 숫자 앞에 0 추가
+            const formattedHours = String(hours).padStart(2, '0');
+            const formattedMinutes = String(minutes).padStart(2, '0');
+            const formattedSeconds = String(seconds).padStart(2, '0');
+
+            // 최종 시간 문자열 구성
+            const timeString = `${period} ${formattedHours}시 ${formattedMinutes}분 ${formattedSeconds}초`;
+
+            // HTML 요소에 시간 표시
+            document.getElementById('title').innerText = timeString;
+        }
+
+        // 초기 시각 업데이트
+        updateTime();
+
+        // 1초마다 시각 업데이트
+        setInterval(updateTime, 1000);
+    </script>
+</body>
+</html>

@@ -380,3 +380,37 @@ function clearPreviousSettings() {
     }
 }
 
+
+
+// 시각을 업데이트하는 함수
+function updateTime() {
+    const now = new Date();
+
+    let hours = now.getHours();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+
+    // 오전/오후 설정
+    const period = hours >= 12 ? '오후' : '오전';
+
+    // 12시간 형식으로 변환
+    hours = hours % 12;
+    hours = hours ? hours : 12; // 0시는 12로 표시
+
+    // 숫자 앞에 0 추가
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(seconds).padStart(2, '0');
+
+    // 최종 시간 문자열 구성
+    const timeString = `${period} ${formattedHours}시 ${formattedMinutes}분 ${formattedSeconds}초`;
+
+    // HTML 요소에 시간 표시
+    document.getElementById('title').innerText = timeString;
+}
+
+// 초기 시각 업데이트
+updateTime();
+
+// 1초마다 시각 업데이트
+setInterval(updateTime, 1000);

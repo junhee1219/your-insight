@@ -1,0 +1,117 @@
+/* 전체 페이지 스타일 */
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background-color: #333;
+    color:  #222222;
+    margin: 0;
+    padding: 20px;
+}
+button, input, select, textarea, li {
+    font-family: 'Noto Sans KR', sans-serif;
+}
+
+/* 페이지 제목 스타일 */
+h1 {
+    text-align: center;
+    color:  #f4f6f8;
+    margin-bottom: 30px;
+}
+
+/* 입력 및 버튼 컨테이너 */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* 폴더 선택 입력 스타일 */
+#folderInput {
+    padding: 10px;
+    border: 2px dashed  #f4f6f8;
+    border-radius: 5px;
+    background-color: #333;
+    cursor: pointer;
+    color :white;
+    transition: border-color 0.3s;
+}
+
+#folderInput:hover {
+    border-color: #c1ff5e;
+}
+
+
+/* 엑셀 내보내기 버튼 스타일 */
+#exportBtn {
+    padding: 10px 20px;
+    background-color: #c1ff5e;
+    color: #000000;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#exportBtn:hover {
+    background-color: #87b341;
+}
+
+/* 파일 트리 리스트 스타일 */
+#fileList {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+#fileList li {
+    position: relative;
+    padding-left: 20px;
+    margin: 5px 0;
+    cursor: default;
+}
+
+#fileList li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 12px;
+    height: 12px;
+    background-size: contain;
+}
+
+#fileList li.folder::before {
+    background-image: url('https://img.icons8.com/ios-filled/16/000000/folder-invoices.png');
+}
+
+#fileList li.file::before {
+    background-image: url('https://img.icons8.com/ios-filled/16/000000/file.png');
+}
+
+/* 트리 구조의 자식 요소 들여쓰기 */
+#fileList ul {
+    margin-left: 20px;
+    border-left: 1px dashed #000000;
+    padding-left: 10px;
+}
+
+/* 스크롤 가능한 파일 목록 */
+#fileList {
+    overflow-y: auto;
+    background-color: #fff;
+    padding: 15px;
+    border: 1px solid #070707;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* 반응형 디자인 */
+@media (max-width: 600px) {
+    .container {
+        flex-direction: column;
+    }
+
+    #folderInput, #exportBtn {
+        width: 100%;
+    }
+}
